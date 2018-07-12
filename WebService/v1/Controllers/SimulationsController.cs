@@ -46,8 +46,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceSimulation.WebService.v1.Controller
             [FromBody] SimulationApiModel simulation,
             [FromQuery(Name = "template")] string template = "")
         {
-            simulation?.ValidateInputRequest(this.log, this.connectionStringManager);
-
             if (simulation == null)
             {
                 if (string.IsNullOrEmpty(template))
@@ -59,6 +57,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceSimulation.WebService.v1.Controller
                 // Simulation can be created with `template=default` other than created with input data
                 simulation = new SimulationApiModel();
             }
+
+            await simulation.ValidateInputRequest(this.log, this.connectionStringManager);
 
             return SimulationApiModel.FromServiceModel(
                 await this.simulationsService.InsertAsync(simulation.ToServiceModel(), template));
